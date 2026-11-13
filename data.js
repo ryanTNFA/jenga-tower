@@ -1,0 +1,181 @@
+/* MCC tower: every block and every score lives here. Edit freely.
+   Audience order (a): Democrats/NGO allies, Republicans/conservatives, OMB/White House, State leadership,
+   Appropriators, Economists/evaluators, Partner governments, US business, In-country power brokers.
+   a: -3..+3 (negative = this audience would push back). want/gate: 0..3. wt: load on staff, time, money.
+   spd: effect on speed (+ faster). trust/goal/one: delivery record, moving goalposts, one-sided terms.
+   strains: other blocks this one loads. needs: blocks it depends on. All scores are judgment. */
+(function (root) {
+  var AUD = [
+    { id: "dem", n: "Democrats and NGO allies" }, { id: "gop", n: "Republicans, conservatives" },
+    { id: "omb", n: "OMB and White House" }, { id: "state", n: "State leadership" },
+    { id: "approp", n: "Appropriators" }, { id: "econ", n: "Economists and evaluators" },
+    { id: "partner", n: "Partner governments" }, { id: "biz", n: "US business" },
+    { id: "power", n: "In-country power brokers" }];
+  var CATS = { core: "Core design", mech: "Delivery mechanics", pol: "Political and institutional glue",
+    state: "Statecraft and commerce", proc: "Procurement", sel: "Selection", cond: "Conditions",
+    evid: "Evidence", scope: "Scope", struct: "Structure" };
+  function b(id, n, s, cat, row, a, want, gate, wt, x, d, basis) {
+    x = x || {};
+    return { id: id, n: n, s: s, cat: cat, row: row, on: row > 0, a: a, want: want, gate: gate, wt: wt,
+      spd: x.spd || 0, trust: x.trust || 0, goal: x.goal || 0, one: x.one || 0, cap: x.cap || 0,
+      needs: x.needs || [], strains: x.strains || [], d: d, basis: basis || "Illustrative" };
+  }
+  function st(t, amt, why) { return { t: t, amt: amt, why: why }; }
+  var BLOCKS = [
+    // ---- the tower as built (row 1 = base) ----
+    b("sel", "Transparent selectivity", "third-party scorecard", "core", 1, [3,3,2,1,2,2,3,2,1], 1, 3, 2, { trust: 1 },
+      "Eligibility keyed to published indicators from outside the US government. Best read as design intent; how tightly it has bound board decisions is less settled.", "Cited"),
+    b("own", "Country ownership", "partner proposes and leads", "core", 1, [3,2,1,1,2,3,3,1,3], 3, 1, 2, { spd: -1, trust: 1 },
+      "Partners develop proposals and lead implementation through a local accountable entity.", "Cited"),
+    b("diag", "Growth diagnostics", "constraints analysis", "core", 1, [2,2,1,0,1,3,2,1,1], 1, 2, 2, { spd: -1, trust: 1 },
+      "Partners and MCC identify the binding constraints to growth, then choose projects against them.", "Cited"),
+    b("err", "Returns hurdle (ERR)", "cost-benefit screen", "core", 1, [2,3,3,1,3,3,1,1,1], 1, 3, 2, { spd: -1, trust: 1 },
+      "Projects must be expected to raise local incomes by more than they cost. The hurdle has not always bound in practice.", "Cited"),
+    b("clock", "Hard compact clock", "fixed term", "core", 2, [1,3,3,2,3,2,1,2,1], 1, 3, 1, { spd: 1, trust: 2 },
+      "Fixed start and end dates. Follow-on money depends on performance.", "Cited"),
+    b("eval", "Independent evaluation", "public data", "core", 2, [3,3,3,1,3,3,1,1,0], 0, 1, 2, { trust: 2 },
+      "Most programs independently evaluated, with data and results published.", "Cited"),
+    b("grants", "Flexible grants", "untied, not loans", "mech", 2, [2,1,1,3,1,1,3,3,3], 3, 1, 1, {},
+      "Grant capital that can fund feasibility work, policy reform and public infrastructure.", "Cited"),
+    b("board", "Board and independence", "statutory standing", "pol", 2, [2,2,1,1,2,2,1,1,1], 1, 2, 1, { trust: 1 },
+      "An independent agency with a board that includes outside members and decides eligibility.", "My read"),
+    b("tranche", "Tranched disbursement", "conditions precedent", "mech", 3, [2,3,3,2,3,3,1,1,1], 1, 3, 1, { spd: -1, trust: 1 },
+      "Money released against conditions and milestones. It can be suspended.", "My read"),
+    b("fid", "Fiduciary controls", "fiscal agent, procurement rules", "mech", 3, [1,3,3,1,3,1,1,1,0], 0, 3, 2, { spd: -1, trust: 2 },
+      "A dedicated local entity with a fiscal agent and MCC-set procurement rules.", "My read"),
+    b("lean", "Lean staff", "small footprint", "mech", 3, [1,3,3,2,2,1,1,1,1], 1, 0, 0, {},
+      "A small agency relative to the size of its portfolio.", "My read"),
+    b("thr", "Threshold programs", "pre-compact reform", "mech", 3, [3,1,1,2,1,2,2,1,2], 2, 2, 1, { needs: ["sel"] },
+      "Smaller programs for countries near the scorecard line.", "My read"),
+    b("inc", "Scorecard incentive", "the 'MCC effect'", "pol", 4, [3,2,1,2,1,2,2,1,2], 2, 2, 0, { needs: ["sel"] },
+      "Countries reform to qualify. Real but conditional: found in 38% of candidates in one study, working through domestic reformers.", "Cited"),
+    b("reg", "Regional compacts", "corridors, power pools", "mech", 4, [2,2,1,3,1,1,2,3,3], 3, 2, 2, { spd: -1 },
+      "Authority for cross-border compacts.", "Cited"),
+    b("stat", "Bipartisan statute", "2003 Act, appropriations", "pol", 4, [3,2,1,1,3,2,2,1,2], 2, 0, 0, { trust: 1 },
+      "Created and sustained across administrations.", "Cited"),
+
+    // ---- the bench: statecraft and commerce ----
+    b("priv", "Private-sector pull", "bankable infrastructure", "state", 0, [1,3,2,3,2,1,2,3,2], 2, 1, 1, {},
+      "Earlier private-sector engagement and life-cycle costing in project design.", "Proposed (CSIS, 2025)"),
+    b("dip", "Compact as diplomatic deal", "bilateral leverage", "state", 0, [1,3,1,3,2,1,2,2,3], 3, 2, 1,
+      { goal: 1, strains: [st("board", 0.5, "eligibility starts to track diplomatic priority")] },
+      "The government-to-government compact used as a foreign-policy instrument.", "Proposed (CSIS, 2025)"),
+    b("dfc", "DFC origination arm", "project prep, de-risking", "state", 0, [1,3,2,3,2,1,1,3,2], 2, 2, 2,
+      { needs: ["grants"], strains: [st("diag", 0.5, "pipeline follows deal flow more than constraints")] },
+      "MCC prepares and de-risks projects for DFC finance.", "Proposed (CSIS, 2025)"),
+    b("min", "Critical minerals focus", "supply chains", "state", 0, [2,3,2,3,2,1,1,3,3], 3, 2, 2,
+      { one: 1, strains: [st("diag", 1, "the sector is chosen before the diagnosis"), st("err", 0.5, "strategic value sits outside the returns test")] },
+      "Compacts aimed at mining-enabling infrastructure and policy reform.", "Proposed (Atlantic Council, 2025)"),
+    b("usroi", "US-return metric", "beside the ERR", "state", 0, [0,3,2,3,1,-1,0,3,0], 0, 1, 1,
+      { one: 1, strains: [st("err", 1, "two hurdles, and the second can outvote the first")] },
+      "A measure of return to the US (firm access, supply chains, leverage) next to the economic rate of return.", "Proposed (CSIS, 2025)"),
+    // ---- procurement ----
+    b("buyam", "Strict Buy American", "tied procurement", "proc", 0, [-1,3,1,1,2,-2,-2,3,-1], 0, 0, 1,
+      { spd: -1, one: 2, strains: [st("err", 1, "higher costs lower project returns"), st("own", 1, "partner loses say over who builds")] },
+      "Procurement restricted to US suppliers.", "Illustrative"),
+    b("bonus", "US-firm bid bonus", "scoring preference", "proc", 0, [0,2,1,2,1,-1,-1,3,-1], 0, 0, 1,
+      { one: 1, strains: [st("err", 0.5, "price is no longer the deciding factor")] },
+      "A scoring bonus for US firms in procurement evaluations.", "Proposed (Atlantic Council, 2025)"),
+    b("local", "Local procurement targets", "localization", "proc", 0, [3,-1,-1,0,0,0,2,-2,3], 2, 0, 1,
+      { spd: -1, strains: [st("fid", 1, "targets pull against open competition"), st("err", 0.5, "fewer qualified bidders")] },
+      "Targets for the share of spending that goes to local firms.", "Illustrative"),
+    b("ban", "Excluded foreign contractors", "named-country ban", "proc", 0, [1,3,1,3,2,-1,-1,2,-1], 0, 1, 1,
+      { spd: -1, one: 1, strains: [st("err", 0.5, "fewer bidders, higher prices"), st("own", 0.5, "partner loses a choice")] },
+      "Firms from specified countries barred from MCC-funded contracts.", "Illustrative"),
+    // ---- selection ----
+    b("waiver", "National-security waiver", "on country selection", "sel", 0, [-1,3,1,3,1,-2,1,1,2], 2, 0, 0,
+      { goal: 1, strains: [st("sel", 1.5, "the scorecard becomes one input among several"), st("inc", 1, "less reason to reform to qualify")] },
+      "Countries that miss the scorecard can be selected for strategic reasons.", "Proposed (CSIS, 2025)"),
+    b("disc", "Board discretion on eligibility", "in place of the scorecard", "sel", 0, [-2,2,0,3,0,-2,0,1,2], 2, 0, 0,
+      { goal: 1, strains: [st("sel", 3, "the scorecard no longer decides"), st("inc", 2, "nothing published to qualify against"), st("board", 0.5, "each choice becomes a political call")] },
+      "The board picks countries directly.", "Proposed (Atlantic Council, 2025)"),
+    b("polproj", "Political direction of projects", "from Washington or the capital", "sel", 0, [-1,1,0,3,0,-3,1,2,3], 3, 0, 1,
+      { goal: 1, strains: [st("diag", 2, "the project is chosen before the constraint is found"), st("err", 1.5, "the hurdle is applied after the decision"), st("own", 1, "or it is the partner's politics that decide")] },
+      "Projects chosen for political or diplomatic reasons, in either country.", "Illustrative"),
+    b("earmark", "Congressional sector directives", "earmarks", "sel", 0, [2,1,-1,0,2,-2,-1,0,0], 0, 0, 1,
+      { strains: [st("diag", 2, "the sector is set in the appropriation"), st("own", 1.5, "partner priorities come second")] },
+      "Appropriations language directing money to named sectors.", "Illustrative"),
+    b("income", "Wider income eligibility", "more candidate countries", "sel", 0, [0,2,0,3,1,0,1,2,2], 2, 1, 2,
+      { strains: [st("sel", 0.5, "peer groups get broader")] },
+      "Raising the income ceiling so more countries can compete.", "Illustrative"),
+    // ---- conditions ----
+    b("unrel", "Unrelated diplomatic conditions", "votes, migration, recognition", "cond", 0, [-1,2,0,3,0,-2,-3,0,-2], 0, 2, 1,
+      { spd: -1, goal: 3, one: 1, strains: [st("own", 1.5, "the compact stops being the partner's program"), st("tranche", 0.5, "conditions precedent lose their link to the project")] },
+      "Compact terms that include asks unrelated to the investment.", "Illustrative"),
+    b("offtake", "Mineral rights or offtake", "partner contributes resources", "cond", 0, [-1,3,1,2,1,-1,-2,3,-2], 0, 2, 1,
+      { goal: 1, one: 3, strains: [st("own", 1, "the partner pays in sovereign assets")] },
+      "The partner commits mineral resources or rights as part of the deal.", "Proposed (Atlantic Council, 2025)"),
+    b("cofin", "Partner co-financing", "skin in the game", "cond", 0, [1,2,2,1,2,2,-1,0,-1], 0, 2, 1, { spd: -1, trust: 1 },
+      "The partner government funds a set share of the compact.", "Illustrative"),
+    // ---- evidence ----
+    b("rct", "Impact evaluation for every project", "RCT mandate", "evid", 0, [2,1,1,0,1,1,-1,-1,-1], 0, 0, 2,
+      { spd: -2, trust: 1, strains: [st("eval", 0.5, "one method crowds out the others"), st("diag", 0.5, "projects get picked for evaluability")] },
+      "Every project must carry a randomized or quasi-experimental impact evaluation.", "Illustrative"),
+    b("errwaive", "ERR waived for strategic projects", "exception route", "evid", 0, [-1,2,-1,3,-1,-3,1,2,2], 2, 0, 0,
+      { spd: 1, strains: [st("err", 2, "the exception becomes the route"), st("eval", 0.5, "less to evaluate against")] },
+      "Projects labelled strategic skip the returns test.", "Illustrative"),
+    // ---- scope ----
+    b("sector", "Sector mandates", "health, education, climate, gender", "scope", 0, [3,-2,-1,0,0,-2,0,0,0], 0, 0, 2,
+      { strains: [st("diag", 2, "the answer is fixed before the question"), st("own", 1, "partner priorities come second")] },
+      "Required spending shares or screens for named sectors or themes.", "Illustrative"),
+    b("safeg", "Expanded safeguards", "environmental and social", "scope", 0, [3,-2,-1,0,0,0,-1,-2,-1], 0, 1, 2,
+      { spd: -2, trust: 1, strains: [st("clock", 0.5, "reviews eat into the term")] },
+      "Broader environmental and social review requirements.", "Illustrative"),
+    b("brand", "Branding and visibility rules", "credit for the US", "scope", 0, [0,2,1,2,2,0,-1,0,0], 0, 0, 1,
+      { strains: [st("own", 0.5, "the program reads as the donor's")] },
+      "Requirements to brand projects and publicise the US role.", "Illustrative"),
+    // ---- structure ----
+    b("merge", "Merger into DFC", "one agency", "struct", 0, [-2,1,2,1,-1,-3,-2,2,-1], 0, 0, 0,
+      { strains: [st("grants", 2, "grant money gets scored against returns"), st("diag", 2, "selection follows private demand"), st("sel", 1.5, "DFC works in every developing country"), st("board", 2, "one board, one mission"), st("stat", 1, "the 2003 bargain is reopened")] },
+      "MCC folded into the development finance agency.", "Illustrative"),
+    b("bureau", "Direction by a State bureau", "policy control", "struct", 0, [-1,1,1,3,-1,-2,0,0,1], 1, 1, 0,
+      { goal: 1, strains: [st("board", 2.5, "decisions move inside the department"), st("sel", 1, "eligibility follows policy"), st("diag", 1, "projects follow policy"), st("eval", 0.5, "less distance from the evaluated")] },
+      "Country and project choices directed by a State Department bureau.", "Illustrative"),
+    b("cboard", "Common board with DFC", "linked, not merged", "struct", 0, [0,1,1,1,1,0,0,2,0], 0, 0, 1,
+      { strains: [st("board", 1, "attention is shared across two agencies")] },
+      "One board governs both agencies, which stay separate.", "Proposed (CGD, 2025)"),
+    b("loans", "Concessional loans", "beside grants", "struct", 0, [0,1,2,1,1,1,-1,1,1], 1, 1, 2,
+      { strains: [st("grants", 1, "pressure to lend where it could grant"), st("lean", 0.5, "a lending shop needs credit staff")] },
+      "Low-interest, long-tenor sovereign loans for larger projects.", "Proposed (CGD, 2025)"),
+    b("third", "Concurrent or third compacts", "repeat partners", "struct", 0, [1,1,-1,3,0,0,3,2,3], 3, 1, 2,
+      { strains: [st("clock", 1, "the end date stops being an end"), st("inc", 0.5, "incumbents crowd out new qualifiers"), st("lean", 0.5, "more compacts per head")] },
+      "More than two compacts with the same country, or two at once.", "Proposed (CSIS and Atlantic Council, 2025)"),
+    b("noclock", "No fixed clock", "open-ended programs", "struct", 0, [0,-2,-3,1,-2,-1,2,0,2], 2, 0, 1,
+      { spd: -1, strains: [st("clock", 3, "there is no end date"), st("tranche", 1, "deadlines lose force")] },
+      "Compacts run until the work is done.", "Illustrative"),
+    b("fast", "12-month compact mandate", "speed rule", "struct", 0, [0,3,2,3,2,-2,1,2,2], 2, 0, 1,
+      { spd: 3, strains: [st("diag", 1.5, "no time to find the constraint"), st("err", 1, "appraisal gets thinner"), st("own", 1, "the partner cannot keep pace"), st("fid", 0.5, "set-up is rushed")] },
+      "Compacts must be signed within a year of selection.", "Illustrative"),
+    b("field", "Embassy field teams", "coordinating role", "struct", 0, [0,2,-1,1,0,0,1,3,1], 1, 1, 2,
+      { strains: [st("lean", 1.5, "standing teams in a dozen posts")] },
+      "Small MCC teams in embassies that originate deals and coordinate other agencies.", "Illustrative"),
+    b("staff", "Larger field staff", "more capacity", "struct", 0, [1,-2,-3,0,-1,1,1,0,1], 0, 0, 0,
+      { spd: 1, cap: 5, strains: [st("lean", 3, "it is no longer a small agency")] },
+      "More people, in Washington and in country. Raises what the tower can carry.", "Illustrative"),
+    b("thrx", "Thresholds for scorecard misses", "wider ramp", "struct", 0, [1,1,0,3,0,0,2,1,2], 2, 1, 2,
+      { needs: ["thr"], strains: [st("sel", 1, "money flows without passing"), st("inc", 1, "less reason to qualify")] },
+      "Threshold-style programs for countries well short of the scorecard.", "Illustrative")
+  ];
+  var PRESETS = [
+    { id: "built", n: "As built", add: [], drop: [] },
+    { id: "basics", n: "Stripped down", add: [], drop: ["thr", "inc", "reg", "grants"] },
+    { id: "econ", n: "Economist's build", add: ["cofin"], drop: [] },
+    { id: "statecraft", n: "Statecraft build", add: ["dip", "min", "dfc", "priv", "usroi", "waiver", "third", "ban"], drop: [] },
+    { id: "approp", n: "Appropriator's build", add: ["brand", "cofin", "buyam", "earmark"], drop: [] },
+    { id: "bagel", n: "Everything bagel", add: "ALL", drop: [], skip: ["merge", "bureau", "noclock", "disc"] }
+  ];
+  var SHOCKS = [
+    { id: "cut", n: "Budget cut", q: "An appropriations fight puts the account on the table.",
+      carriers: ["eval", "err", "fid", "clock", "stat", "lean"], auds: ["approp", "omb"] },
+    { id: "admin", n: "Change of administration", q: "A new team asks why this agency exists.",
+      carriers: ["stat", "board", "sel", "eval"], auds: ["dem", "gop"] },
+    { id: "flop", n: "Flagship project flops", q: "A big investment fails to raise incomes.",
+      carriers: ["diag", "err", "eval", "own"], auds: ["econ", "approp"] },
+    { id: "scandal", n: "Scandal in a compact country", q: "Corruption or a coup hits a partner mid-compact.",
+      carriers: ["sel", "fid", "tranche", "board"], auds: ["approp", "gop", "dem"] },
+    { id: "renege", n: "Partner reneges", q: "A government walks back its commitments.",
+      carriers: ["own", "tranche", "clock", "diag"], auds: ["partner", "power"] }
+  ];
+  var D = { AUD: AUD, CATS: CATS, BLOCKS: BLOCKS, PRESETS: PRESETS, SHOCKS: SHOCKS, SLACK: 3 };
+  if (typeof module !== "undefined" && module.exports) module.exports = D; else root.DATA = D;
+})(this);
