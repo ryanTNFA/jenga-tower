@@ -22,7 +22,9 @@ button{font:inherit;color:inherit}
 .pill:hover{border-color:var(--fg)}.pill[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 :focus-visible{outline:3px solid var(--c3);outline-offset:2px}
 .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
-@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}
+/* on a phone, put the cards in play order: tower, what you built, trade-off, stress test, then the rest */
+.col{display:contents}.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}.o8{order:8}.o9{order:9}.o10{order:10}.o11{order:11}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
 /* tower */
 .stage{padding:30px 14px 0;overflow:hidden}
@@ -53,7 +55,9 @@ button{font:inherit;color:inherit}
 .dial span{font-size:12px;color:var(--mut)}
 .statement p{margin:0 0 8px}.statement ul{margin:0 0 8px;padding-left:18px}.statement li{margin:2px 0}
 .hl{border-left:4px solid var(--warn);padding-left:10px}.gn{border-left:4px solid var(--ok);padding-left:10px}
-.row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.6fr) 46px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+.row{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 104px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+.chg{font-size:12px;white-space:nowrap}.chg.up{color:var(--ok)}.chg.down{color:var(--warn)}.chg.same{color:var(--mut)}
+@media(max-width:420px){.row{grid-template-columns:minmax(0,1fr) minmax(0,.7fr) 92px;gap:6px}}
 .meter{height:10px;background:var(--track);border-radius:5px;position:relative}
 .meter i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--c1)}
 .meter i.dn{background:var(--warn)}.meter i.neg{background:var(--c4)}
@@ -95,41 +99,41 @@ textarea{width:100%;min-height:70px;font:12px/1.4 ui-monospace,Consolas,monospac
 <main>
 <h1>Build your own MCC</h1>
 <p class="tag1">Every block has a backer. No tower holds them all.</p>
-<p class="sub">Pull a block, or add one from the bench. See who you gain, who pays, and what is left holding the weight when something goes wrong. <a href="index.html">Reference view</a> · <a href="mcc-tower-thought-piece.pdf">The note behind it</a></p>
+<p class="sub">Pull a block, or add one from the bench. See who you gain, what it costs, and what is left holding the weight when something goes wrong.</p>
 <details class="sub" style="margin-top:-6px"><summary style="cursor:pointer">What this is meant to show</summary>
 <ol style="margin:6px 0 0;padding-left:20px"><li>There is no single correct MCC. Each build serves someone.</li><li>Every addition is paid for by something already in the tower.</li><li>The bill rarely arrives the day you make the change. It arrives with the next shock.</li></ol></details>
 <div class="pgroup" id="presets"><span class="note">Start from:</span></div>
 <div class="pgroup" id="funsets" style="margin-bottom:16px"><span class="note">Or a cautionary tale:</span></div>
 
 <div class="grid">
-  <div>
-    <div class="card stage">
+  <div class="col">
+    <div class="card stage o1">
       <div class="tower" id="tower"></div>
       <div class="ground"></div>
       <div class="wob"><span>Wobble</span><span class="meter"><i id="wob"></i></span><span id="wobn" class="num" style="width:auto"></span></div>
-      <p class="note" style="margin:10px 8px 12px">Click a block to pull it. Dashed blocks are ones you added. Stripes mean another block is straining it. Faded means it carries little weight now.</p>
+      <p class="note" style="margin:10px 8px 12px">Click a block to pull it. A dashed outline marks a block you added. Striped means weakened: another block leans on it, or something it rests on is gone. Striped and faded means barely holding.</p>
     </div>
-    <div class="card bench" id="bench"><h2>The bench</h2><p class="note" style="margin:0">Ideas people have proposed, pushed, or resisted. Each has a real constituency. Click to add one and watch what it leans on.</p></div>
-    <div class="card" id="detail"></div>
+    <div class="card bench o5" id="bench"><h2>The bench</h2><p class="note" style="margin:0">Ideas people have proposed, pushed, or resisted. Each has a real constituency. Click to add one and watch what it leans on.</p></div>
+    <div class="card o6" id="detail"></div>
   </div>
-  <div>
-    <div class="card verdict" id="verdict"></div>
-    <div class="card statement" id="statement"></div>
-    <div class="card">
+  <div class="col">
+    <div class="card verdict o2" id="verdict"></div>
+    <div class="card statement o3" id="statement"></div>
+    <div class="card o9">
       <h2>Your risk tolerance</h2>
       <div class="bar" id="tolset" style="margin-bottom:8px"></div>
       <div class="dials" id="dials"></div>
       <p class="note" style="margin:8px 0 0">Tolerance never changes the numbers. It sets how thin a margin has to get before it counts as a headline.</p>
     </div>
-    <div class="card"><h2>Stress test</h2>
+    <div class="card o4"><h2>Stress test</h2>
       <p class="note" style="margin:0 0 8px">A pulled block rarely shows on a quiet day. Hit the tower and see what is left to carry it.</p>
       <div class="shock" id="shocks"></div><div id="stress"></div></div>
-    <div class="card"><h2>Who is with you</h2><div id="coal"></div><p class="note" style="margin:6px 0 0">The tick marks the tower as built.</p></div>
-    <div class="card"><h2>Leverage and load</h2><div id="lev"></div>
+    <div class="card o7"><h2>Who backs it</h2><div id="coal"></div><p class="note" style="margin:6px 0 0">The line on each bar marks the tower as built. The words compare your build with it.</p></div>
+    <div class="card o8"><h2>What the tower can do</h2><div id="lev"></div>
       <label class="toggle"><input type="checkbox" id="lens"> Show the deal profile (transactionalism lens)</label>
       <div id="profile"></div></div>
-    <div class="card"><h2>Things to try</h2><ul class="chal" id="chal"></ul></div>
-    <div class="card"><h2>Share or argue</h2>
+    <div class="card o10"><h2>Things to try</h2><ul class="chal" id="chal"></ul></div>
+    <div class="card o11"><h2>Share or argue</h2>
       <div class="bar" style="margin:0"><button class="pill" id="copy">Copy link to this build</button><button class="pill" id="export">Export changed scores</button></div>
       <textarea id="out" hidden readonly aria-label="Exported scores"></textarea></div>
   </div>
@@ -142,10 +146,10 @@ textarea{width:100%;min-height:70px;font:12px/1.4 ui-monospace,Consolas,monospac
 (function(){
 const D=DATA,M=MODEL,BY=M.byId(D),$=id=>document.getElementById(id);
 const COL={core:"var(--c1)",mech:"var(--c2)",pol:"var(--c4)"};
-const ORIG=JSON.parse(JSON.stringify(D.BLOCKS.map(b=>({id:b.id,a:b.a,want:b.want,gate:b.gate,wt:b.wt}))));
+const ORIG=JSON.parse(JSON.stringify(D.BLOCKS.map(b=>({id:b.id,a:b.a,rig:b.rig,want:b.want,gate:b.gate,wt:b.wt}))));
 let on=M.defaults(D), order=[], tol={funding:1,leverage:1,evidence:1,speed:1}, last=null, prev=null, shock=null, runAll=false, fx=null, dropId=null;const won={};
 const TL=["Cautious","Balanced","Bold"];
-const DIALS=[["funding","Bipartisan funding"],["leverage","In-country leverage"],["evidence","Evidence credibility"],["speed","Speed"]];
+const DIALS=[["funding","Bipartisan funding"],["leverage","In-country leverage"],["evidence","Economic rigor"],["speed","Speed"]];
 // ---- state in the URL ----
 function load(){const h=location.hash.slice(1);if(!h)return;const p=new URLSearchParams(h);
   if(p.get("b")){const ids=p.get("b").split(".").filter(i=>BY[i]);on=ids;order=ids.filter(i=>!BY[i].on);}
@@ -158,7 +162,8 @@ function toggle(id){prev=M.evaluate(D,on);last=id;shock=null;runAll=false;dropId
 function setPreset(p){prev=null;last=null;shock=null;runAll=false;dropId='*';on=M.preset(D,p);order=on.filter(i=>!BY[i].on);render();}
 // ---- render ----
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
-function pct(x){return Math.round(x*100)+"%";}
+// Words and arrows in place of numbers: "up a lot", "down a little", compared with the tower as built.
+function chg(x,aud){const c=M.change(x,aud);return "<span class='chg "+c.dir+"'>"+(c.dir==="up"?"▲ ":c.dir==="down"?"▼ ":"– ")+c.word+"</span>";}
 function render(){const r=M.evaluate(D,on);save();
   // tower
   const T=$("tower");T.innerHTML="";
@@ -191,10 +196,12 @@ function render(){const r=M.evaluate(D,on);save();
   }
   S.innerHTML=h;
   // coalition
-  const C=$("coal");C.innerHTML="";D.AUD.forEach((a,i)=>C.appendChild(meterRow(a.n,r.ratio[i])));
+  const C=$("coal");C.innerHTML="";D.AUD.forEach((a,i)=>C.appendChild(meterRow(a.n,r.ratio[i],true)));
   const L=$("lev");L.innerHTML="";L.appendChild(meterRow("Prize: what partners want",r.prizeR));L.appendChild(meterRow("Gate: what the US can condition",r.gateR));
-  const cap=el("div","row");cap.innerHTML="<span>Load on staff, time, money</span><span class='meter'><i class='"+(r.load>r.budget?"dn":"")+"' style='width:"+Math.min(100,r.load/r.budget*66.6)+"%'></i></span><span class='num'>"+r.load+"/"+r.budget+"</span>";L.appendChild(cap);
-  if(r.dil<1)L.appendChild(el("p","note","Over capacity. Every block now delivers about "+pct(r.dil)+" of what it could, to everyone."));
+  L.appendChild(meterRow("Economic rigor: can it show the money works",r.rigR));
+  const used=r.load/r.budget,cw=r.dil<1?["overloaded","down"]:used>0.85?["nearly full","same"]:["room left","up"];
+  const cap=el("div","row");cap.innerHTML="<span>Load on staff, time, money</span><span class='meter'><i class='"+(r.dil<1?"dn":"")+"' style='width:"+Math.min(100,used*66.6)+"%'></i></span><span class='chg "+cw[1]+"'>"+cw[0]+"</span>";L.appendChild(cap);
+  if(r.dil<1)L.appendChild(el("p","note","Over capacity. Every block now does less of its job, for everyone."));
   const P=$("profile");P.innerHTML=$("lens").checked?'<p style="margin:8px 0 0"><b>'+r.profile.id[0].toUpperCase()+r.profile.id.slice(1)+" deal.</b> "+r.profile.why[0].toUpperCase()+r.profile.why.slice(1)+'.</p><p class="note" style="margin:4px 0 0">Four types: contained, constructive, counterproductive, corrosive. The test is what happens next.</p>':"";
   // stress
   document.querySelectorAll("#shocks .pill").forEach(c=>c.setAttribute("aria-pressed",c.dataset.id==="all"?runAll:!!shock&&c.dataset.id===shock.id));
@@ -203,32 +210,36 @@ function render(){const r=M.evaluate(D,on);save();
     X.innerHTML="<p><b>Survived "+n+" of "+all.length+".</b> "+(n===all.length?"Nothing gave. Either you built well or you have not added much.":n===0?"Every shock found something missing.":"The ones that hurt show what you traded away.")+"</p><div class='score'>"+all.map(x=>"<span class='dot "+(x.verdict==="holds"?"h":x.verdict==="gives way"?"g":"s")+"'>"+x.shock.n+": "+x.verdict+"</span>").join("")+"</div>";}
   else if(!sres)X.innerHTML="";else{
     X.innerHTML="<p><b>"+shock.n+": the tower "+sres.verdict+".</b> "+shock.q+"</p><ul style='margin:0;padding-left:18px'>"+sres.rows.map(x=>"<li>"+x.n+": "+x.state+"</li>").join("")+"</ul>"+
-    (sres.weakAud.length?"<p class='note'>And the people you would turn to are thinner: "+sres.weakAud.map(a=>D.AUD[M.AUDIX[a.id]].n).join(", ")+".</p>":"")+(r.dil<1?"<p class='note'>An overloaded tower absorbs less.</p>":"")+(sres.verdict==="gives way"?"<p class='note'>(Rebuilt, so you can keep playing.)</p>":"");}
+    (sres.weakAud.length?"<p class='note'>And what you would lean on is thinner: "+sres.weakAud.map(a=>M.who(D,a.id)).join(", ")+".</p>":"")+(r.dil<1?"<p class='note'>An overloaded tower absorbs less.</p>":"")+(sres.verdict==="gives way"?"<p class='note'>(Rebuilt, so you can keep playing.)</p>":"");}
   // challenges
   const ch=M.challenges(D,r,tol);$("chal").innerHTML=D.CHALLENGES.map(c=>{if(ch[c.id])won[c.id]=true;return "<li class='"+(won[c.id]?"done":"")+"'><span class='box'>"+(won[c.id]?"✓":"")+"</span><span><b>"+c.n+".</b> "+c.d+"</span></li>";}).join("");
   detail(r);
 }
 function blockBtn(b,r,smap){
   if(!r.on[b.id]){const g=el("button","blk gap",b.n+"<small>pulled, click to restore</small>");g.onclick=()=>toggle(b.id);if(smap[b.id]==="missing")g.classList.add("hit");return g;}
-  const s=r.str[b.id],e=el("button","blk"+(b.on?"":" added")+(s<0.99?" strained":"")+(s<0.5?" weak":""),b.n+"<small>"+b.s+"</small>"+(s<0.99?'<span class="tag">'+pct(s)+"</span>":""));
-  if(dropId===b.id||(dropId==="*"&&!b.on))e.classList.add("drop");e.style.setProperty("--k",COL[b.cat]||"var(--c3)");e.title=b.d;e.onclick=()=>toggle(b.id);
+  const s=r.str[b.id],st=s<0.5?"barely holding":s<0.99?"strained":"solid",e=el("button","blk"+(b.on?"":" added")+(s<0.99?" strained":"")+(s<0.5?" weak":""),b.n+"<small>"+b.s+"</small>"+(s<0.99?'<span class="tag">'+(s<0.5?"barely":"strained")+"</span>":""));
+  if(dropId===b.id||(dropId==="*"&&!b.on))e.classList.add("drop");e.style.setProperty("--k",COL[b.cat]||"var(--c3)");e.title=b.n+" ("+st+"). "+b.d;e.onclick=()=>toggle(b.id);
   if(smap[b.id])e.classList.add(smap[b.id]==="holding"?"held":"hit");return e;}
-function meterRow(label,x){const e=el("div","row"),w=Math.max(0,Math.min(1.5,x))/1.5*100;
-  e.innerHTML="<span>"+label+"</span><span class='meter'><i class='"+(x<=0?"neg":x<0.97?"dn":"")+"' style='width:"+(x<=0?3:w)+"%'></i></span><span class='num'>"+(x<=0?"gone":pct(x))+"</span>";return e;}
-function names(b,test){return D.AUD.filter((a,i)=>test(b.a[i])).map(a=>a.n).join(", ")||"no one strongly";}
+function meterRow(label,x,aud){const e=el("div","row"),w=Math.max(0,Math.min(1.5,x))/1.5*100;
+  e.innerHTML="<span>"+label+"</span><span class='meter'><i class='"+(x<=0?"neg":x<0.97?"dn":"")+"' style='width:"+(x<=0?3:w)+"%'></i></span>"+chg(x,aud);return e;}
+function names(b,test){return D.AUD.filter((a,i)=>test(b.a[i])).map(a=>a.s).join(", ")||"no one strongly";}
 function detail(r){const X=$("detail");if(!last){X.innerHTML="<h2>Last move</h2><p class='note' style='margin:0'>Nothing yet. Each move shows here: what the block is, who wants it, what it strains, and what your move changed.</p>";return;}
   const b=BY[last],inT=r.on[b.id];let h="<h2>Last move: "+(inT?"added":"pulled")+"</h2><p style='margin:0'><b>"+b.n+"</b> <span class='note'>· "+D.CATS[b.cat]+" · "+b.basis+"</span></p><dl><dt>What it is</dt><dd>"+b.d+"</dd>";
   h+="<dt>Who wants it</dt><dd>"+names(b,v=>v>=2)+"</dd><dt>Who pushes back</dt><dd>"+names(b,v=>v<0)+"</dd>";
   if(b.strains.length)h+="<dt>What it strains</dt><dd>"+b.strains.map(s=>BY[s.t].n+": "+s.why).join("; ")+"</dd>";
-  if(b.needs.length)h+="<dt>Rests on</dt><dd>"+b.needs.map(n=>BY[n].n).join(", ")+"</dd>";
-  if(prev){const ch=D.AUD.map((a,i)=>({n:a.n,d:r.ratio[i]-prev.ratio[i]})).filter(x=>Math.abs(x.d)>=0.015).sort((x,y)=>Math.abs(y.d)-Math.abs(x.d)).slice(0,5);
-    const g=r.gateR-prev.gateR,p=r.prizeR-prev.prizeR;if(Math.abs(g)>=0.015)ch.push({n:"Gate",d:g});if(Math.abs(p)>=0.015)ch.push({n:"Prize",d:p});
-    h+="<dt>What this move changed</dt><dd>"+(ch.length?ch.map(x=>x.n+" "+(x.d>0?"+":"−")+Math.abs(Math.round(x.d*100))+" pts").join("; "):"Nothing you can see today. Try a stress test.")+"</dd>";}
+  if(b.needs.length)h+="<dt>Rests on</dt><dd>"+b.needs.map(n=>BY[n].n+(b.nwhy[n]?" ("+b.nwhy[n]+")":"")).join("; ")+"</dd>";
+  const lean=D.BLOCKS.filter(x=>x.needs.includes(b.id));
+  if(lean.length)h+="<dt>What rests on it</dt><dd>"+lean.map(x=>x.n).join(", ")+(inT?"":" (weakened while this is out)")+"</dd>";
+  if(b.rig!==0)h+="<dt>Economic rigor</dt><dd>"+(b.rig>0?"Adds to it":"Costs some of it")+"</dd>";
+  if(prev){const R=(a,p)=>p>0?a/p:(a>p?1.3:1),ch=D.AUD.map((a,i)=>({n:a.n,x:R(r.ratio[i],prev.ratio[i]),aud:true}));
+    ch.push({n:"Gate",x:R(r.gateR,prev.gateR)},{n:"Prize",x:R(r.prizeR,prev.prizeR)},{n:"Economic rigor",x:R(r.rigR,prev.rigR)});
+    const shown=ch.filter(c=>Math.abs(c.x-1)>=0.03).sort((p,q)=>Math.abs(q.x-1)-Math.abs(p.x-1)).slice(0,6);
+    h+="<dt>What this move changed</dt><dd>"+(shown.length?shown.map(c=>c.n+" "+chg(c.x,c.aud)).join("; "):"Nothing you can see today. Try a stress test.")+"</dd>";}
   h+="</dl><details><summary>Disagree? Edit this block's scores</summary><div class='edit'>"+D.AUD.map((a,i)=>"<label>"+a.n+"<input type='number' min='-3' max='3' step='1' id='e_a"+i+"' value='"+b.a[i]+"'></label>").join("")+
-    "<label>Partners want it (0-3)<input type='number' min='0' max='3' id='e_want' value='"+b.want+"'></label><label>US gate (0-3)<input type='number' min='0' max='3' id='e_gate' value='"+b.gate+"'></label><label>Load<input type='number' min='0' max='5' id='e_wt' value='"+b.wt+"'></label></div></details>";
+    "<label>Economic rigor (-3 to 3)<input type='number' min='-3' max='3' step='1' id='e_rig' value='"+b.rig+"'></label><label>Partners want it (0-3)<input type='number' min='0' max='3' id='e_want' value='"+b.want+"'></label><label>US gate (0-3)<input type='number' min='0' max='3' id='e_gate' value='"+b.gate+"'></label><label>Load<input type='number' min='0' max='5' id='e_wt' value='"+b.wt+"'></label></div></details>";
   X.innerHTML=h;
   X.querySelectorAll(".edit input").forEach(inp=>inp.onchange=()=>{const v=Number(inp.value);if(isNaN(v))return;const k=inp.id.slice(2);
-    if(k[0]==="a"&&k.length===2)b.a[+k[1]]=Math.max(-3,Math.min(3,v));else b[k]=Math.max(0,v);prev=null;const open=true;render();const d=$("detail").querySelector("details");if(d)d.open=open;});
+    if(k[0]==="a"&&k.length===2)b.a[+k[1]]=Math.max(-3,Math.min(3,v));else if(k==="rig")b.rig=Math.max(-3,Math.min(3,v));else b[k]=Math.max(0,v);prev=null;const open=true;render();const d=$("detail").querySelector("details");if(d)d.open=open;});
 }
 // ---- static controls ----
 D.PRESETS.forEach(p=>{const e=el("button","pill"+(p.g==="fun"?" fun":""),p.n);e.dataset.id=p.id;e.title=p.quip;e.onclick=()=>setPreset(p);$(p.g==="fun"?"funsets":"presets").appendChild(e);});
@@ -243,7 +254,7 @@ D.SHOCKS.forEach(s=>{const e=el("button","pill",s.n);e.dataset.id=s.id;e.onclick
 {const e=el("button","pill","Run all five");e.dataset.id="all";e.style.fontWeight="700";e.onclick=()=>{shock=null;runAll=!runAll;if(runAll){const a=M.stressAll(D,M.evaluate(D,on));fx=a.some(x=>x.verdict==="gives way")?"fall":a.some(x=>x.verdict!=="holds")?"shake":"pulse";}render();};$("shocks").prepend(e);}
 $("lens").onchange=render;
 $("copy").onclick=()=>{const u=location.href,b=$("copy");(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{b.textContent="Link copied";},()=>{const o=$("out");o.hidden=false;o.value=u;o.select();});};
-$("export").onclick=()=>{const ch=D.BLOCKS.map(b=>({id:b.id,a:b.a,want:b.want,gate:b.gate,wt:b.wt})).filter((b,i)=>JSON.stringify(b)!==JSON.stringify(ORIG[i]));const o=$("out");o.hidden=false;o.value=ch.length?JSON.stringify(ch,null,1):"No scores changed yet. Edit a block's scores under Last move.";};
+$("export").onclick=()=>{const ch=D.BLOCKS.map(b=>({id:b.id,a:b.a,rig:b.rig,want:b.want,gate:b.gate,wt:b.wt})).filter((b,i)=>JSON.stringify(b)!==JSON.stringify(ORIG[i]));const o=$("out");o.hidden=false;o.value=ch.length?JSON.stringify(ch,null,1):"No scores changed yet. Edit a block's scores under Last move.";};
 load();dials();render();
 })();
 </script>
