@@ -66,40 +66,69 @@ details summary{cursor:pointer;font-size:13px;color:var(--mut);margin-top:10px}
 .edit input{width:100%;font:inherit;padding:2px 4px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:4px}
 textarea{width:100%;min-height:70px;font:12px/1.4 ui-monospace,Consolas,monospace;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;margin-top:8px}
 .toggle{font-size:13px;display:flex;gap:6px;align-items:center;margin-top:8px}
+
+.tag1{font-size:19px;font-weight:700;margin:2px 0 6px;max-width:760px}
+.verdict h3{font-size:21px;line-height:1.2;margin:0 0 4px;text-wrap:balance}
+.verdict .quip{font-style:italic;color:var(--mut);margin:0 0 8px}
+.pgroup{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
+.pill.fun{border-style:dashed}
+.blk.drop{animation:drop .45s cubic-bezier(.3,1.5,.5,1)}
+@keyframes drop{0%{transform:translateY(-70px) rotate(-4deg);opacity:0}100%{transform:none;opacity:1}}
+.tower.shake{animation:shake .5s linear 2}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px) rotate(-1deg)}75%{transform:translateX(6px) rotate(1deg)}}
+.tower.fall .blk{animation:fall 1.9s ease-in forwards}
+@keyframes fall{0%{transform:none}12%{transform:translateX(calc(var(--tx)*.1)) rotate(calc(var(--rot)*.1))}55%,82%{transform:translate(var(--tx),var(--ty)) rotate(var(--rot));opacity:.9}100%{transform:none;opacity:1}}
+.tower.pulse .blk{animation:pulse .7s ease}
+@keyframes pulse{50%{box-shadow:0 0 0 3px var(--ok)}}
+@media(prefers-reduced-motion:reduce){.blk.drop,.tower.shake,.tower.fall .blk,.tower.pulse .blk{animation:none}}
+.wob{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin:8px 8px 0}
+.wob .meter{flex:1}.wob .meter::after{display:none}
+.score{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.dot{font-size:12px;border-radius:4px;padding:2px 7px;border:1px solid var(--line)}
+.dot.h{background:var(--ok);color:var(--on);border-color:var(--ok)}.dot.s{background:var(--c3);color:var(--on);border-color:var(--c3)}.dot.g{background:var(--warn);color:var(--on);border-color:var(--warn)}
+.chal{list-style:none;margin:0;padding:0}.chal li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px;margin:6px 0;font-size:13px}
+.chal .box{width:18px;height:18px;border:2px solid var(--line);border-radius:4px;display:grid;place-items:center;font-weight:700;font-size:12px}
+.chal li.done .box{background:var(--ok);border-color:var(--ok);color:var(--on)}.chal li.done b{text-decoration:line-through}
 </style>
 </head>
 <body>
 <main>
 <h1>Build your own MCC</h1>
-<p class="sub">The Millennium Challenge Corporation is a stack of parts, and different people prize different ones. Pull a block or add one from the bench and see who you gain, who you may lose, and what is left holding the weight. There is no winning build. Every score here is a judgment you can change. <a href="index.html">Reference view</a> · <a href="mcc-tower-thought-piece.pdf">The note behind it</a></p>
-
-<div class="bar" id="presets"><span class="note">Start from:</span></div>
+<p class="tag1">Every block has a backer. No tower holds them all.</p>
+<p class="sub">Pull a block, or add one from the bench. See who you gain, who pays, and what is left holding the weight when something goes wrong. <a href="index.html">Reference view</a> · <a href="mcc-tower-thought-piece.pdf">The note behind it</a></p>
+<details class="sub" style="margin-top:-6px"><summary style="cursor:pointer">What this is meant to show</summary>
+<ol style="margin:6px 0 0;padding-left:20px"><li>There is no single correct MCC. Each build serves someone.</li><li>Every addition is paid for by something already in the tower.</li><li>The bill rarely arrives the day you make the change. It arrives with the next shock.</li></ol></details>
+<div class="pgroup" id="presets"><span class="note">Start from:</span></div>
+<div class="pgroup" id="funsets" style="margin-bottom:16px"><span class="note">Or a cautionary tale:</span></div>
 
 <div class="grid">
   <div>
     <div class="card stage">
       <div class="tower" id="tower"></div>
       <div class="ground"></div>
+      <div class="wob"><span>Wobble</span><span class="meter"><i id="wob"></i></span><span id="wobn" class="num" style="width:auto"></span></div>
       <p class="note" style="margin:10px 8px 12px">Click a block to pull it. Dashed blocks are ones you added. Stripes mean another block is straining it. Faded means it carries little weight now.</p>
     </div>
-    <div class="card bench" id="bench"><h2>The bench</h2><p class="note" style="margin:0">Ideas people have proposed, pushed, or resisted. Each has a real constituency. Click to add.</p></div>
+    <div class="card bench" id="bench"><h2>The bench</h2><p class="note" style="margin:0">Ideas people have proposed, pushed, or resisted. Each has a real constituency. Click to add one and watch what it leans on.</p></div>
     <div class="card" id="detail"></div>
   </div>
   <div>
+    <div class="card verdict" id="verdict"></div>
+    <div class="card statement" id="statement"></div>
     <div class="card">
       <h2>Your risk tolerance</h2>
       <div class="bar" id="tolset" style="margin-bottom:8px"></div>
       <div class="dials" id="dials"></div>
       <p class="note" style="margin:8px 0 0">Tolerance never changes the numbers. It sets how thin a margin has to get before it counts as a headline.</p>
     </div>
-    <div class="card statement" id="statement"></div>
+    <div class="card"><h2>Stress test</h2>
+      <p class="note" style="margin:0 0 8px">A pulled block rarely shows on a quiet day. Hit the tower and see what is left to carry it.</p>
+      <div class="shock" id="shocks"></div><div id="stress"></div></div>
     <div class="card"><h2>Who is with you</h2><div id="coal"></div><p class="note" style="margin:6px 0 0">The tick marks the tower as built.</p></div>
     <div class="card"><h2>Leverage and load</h2><div id="lev"></div>
       <label class="toggle"><input type="checkbox" id="lens"> Show the deal profile (transactionalism lens)</label>
       <div id="profile"></div></div>
-    <div class="card"><h2>Stress test</h2>
-      <p class="note" style="margin:0 0 8px">A pulled block rarely shows on a quiet day. Apply a shock and see what is left to carry it.</p>
-      <div class="shock" id="shocks"></div><div id="stress"></div></div>
+    <div class="card"><h2>Things to try</h2><ul class="chal" id="chal"></ul></div>
     <div class="card"><h2>Share or argue</h2>
       <div class="bar" style="margin:0"><button class="pill" id="copy">Copy link to this build</button><button class="pill" id="export">Export changed scores</button></div>
       <textarea id="out" hidden readonly aria-label="Exported scores"></textarea></div>
@@ -114,7 +143,7 @@ textarea{width:100%;min-height:70px;font:12px/1.4 ui-monospace,Consolas,monospac
 const D=DATA,M=MODEL,BY=M.byId(D),$=id=>document.getElementById(id);
 const COL={core:"var(--c1)",mech:"var(--c2)",pol:"var(--c4)"};
 const ORIG=JSON.parse(JSON.stringify(D.BLOCKS.map(b=>({id:b.id,a:b.a,want:b.want,gate:b.gate,wt:b.wt}))));
-let on=M.defaults(D), order=[], tol={funding:1,leverage:1,evidence:1,speed:1}, last=null, prev=null, shock=null;
+let on=M.defaults(D), order=[], tol={funding:1,leverage:1,evidence:1,speed:1}, last=null, prev=null, shock=null, runAll=false, fx=null, dropId=null;const won={};
 const TL=["Cautious","Balanced","Bold"];
 const DIALS=[["funding","Bipartisan funding"],["leverage","In-country leverage"],["evidence","Evidence credibility"],["speed","Speed"]];
 // ---- state in the URL ----
@@ -123,10 +152,10 @@ function load(){const h=location.hash.slice(1);if(!h)return;const p=new URLSearc
   if(p.get("t")){const t=p.get("t").split("").map(Number);DIALS.forEach((d,i)=>{if(t[i]>=0&&t[i]<=2)tol[d[0]]=t[i];});}}
 function save(){try{history.replaceState(null,"","#b="+on.join(".")+"&t="+DIALS.map(d=>tol[d[0]]).join(""));}catch(e){}}
 // ---- moves ----
-function toggle(id){prev=M.evaluate(D,on);last=id;shock=null;
+function toggle(id){prev=M.evaluate(D,on);last=id;shock=null;runAll=false;dropId=on.includes(id)?null:id;
   if(on.includes(id)){on=on.filter(i=>i!==id);order=order.filter(i=>i!==id);}else{on=on.concat(id);if(!BY[id].on)order.push(id);}
   render();}
-function setPreset(p){prev=null;last=null;shock=null;on=M.preset(D,p);order=on.filter(i=>!BY[i].on);render();}
+function setPreset(p){prev=null;last=null;shock=null;runAll=false;dropId='*';on=M.preset(D,p);order=on.filter(i=>!BY[i].on);render();}
 // ---- render ----
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
 function pct(x){return Math.round(x*100)+"%";}
@@ -137,11 +166,18 @@ function render(){const r=M.evaluate(D,on);save();
   for(let row=1;row<=4;row++){const L=el("div","lvl");
     D.BLOCKS.filter(b=>b.row===row).forEach(b=>L.appendChild(blockBtn(b,r,smap)));T.appendChild(L);}
   for(let i=0;i<order.length;i+=4){const L=el("div","lvl extra");order.slice(i,i+4).forEach(id=>L.appendChild(blockBtn(BY[id],r,smap)));T.appendChild(L);}
-  const amp=r.instability*2.2;T.style.setProperty("--amp",amp.toFixed(2)+"deg");T.style.setProperty("--per",(6-r.instability*3).toFixed(1)+"s");T.classList.toggle("sway",amp>0.05);
+  const amp=r.instability*3.2;T.style.setProperty("--amp",amp.toFixed(2)+"deg");T.style.setProperty("--per",(6-r.instability*3.5).toFixed(1)+"s");
+  T.classList.remove("shake","fall","pulse");T.classList.toggle("sway",amp>0.05&&!fx);
+  if(fx){T.querySelectorAll(".blk").forEach(e=>{e.style.setProperty("--tx",(Math.random()*260-130).toFixed(0)+"px");e.style.setProperty("--ty",(120+Math.random()*160).toFixed(0)+"px");e.style.setProperty("--rot",(Math.random()*120-60).toFixed(0)+"deg");});
+    void T.offsetWidth;T.classList.add(fx);const was=fx;fx=null;setTimeout(()=>{T.classList.remove(was);T.classList.toggle("sway",amp>0.05);},was==="fall"?2000:1100);}
+  dropId=null;
+  $("wob").style.width=Math.round(r.instability*100)+"%";$("wob").className=r.instability>0.6?"dn":"";$("wobn").textContent=r.instability<0.05?"steady":r.instability<0.35?"a little":r.instability<0.7?"swaying":"hold your breath";
   // bench
   document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",on.includes(c.dataset.id)));
-  document.querySelectorAll("#presets .pill").forEach(c=>{const p=D.PRESETS.find(x=>x.id===c.dataset.id);const s=M.preset(D,p);c.setAttribute("aria-pressed",s.length===on.length&&s.every(i=>on.includes(i)));});
+  document.querySelectorAll("#presets .pill,#funsets .pill").forEach(c=>{const p=D.PRESETS.find(x=>x.id===c.dataset.id);const s=M.preset(D,p);c.setAttribute("aria-pressed",s.length===on.length&&s.every(i=>on.includes(i)));});
   // statement
+  const v=M.verdict(D,r),act=D.PRESETS.find(p=>{const s=M.preset(D,p);return s.length===on.length&&s.every(i=>on.includes(i));});
+  $("verdict").innerHTML="<h2>What you built</h2><h3>"+v.title+"</h3>"+(act&&act.id!=="built"?'<p class="quip">'+act.n+": "+act.quip+"</p>":"")+"<p style='margin:0'>"+v.line+"</p>";
   const k=M.risks(D,r,tol),S=$("statement");let h="<h2>The trade-off you are accepting</h2>";
   const same=on.length===M.defaults(D).length&&M.defaults(D).every(i=>on.includes(i));
   if(same)h+="<p>This is the tower as built. Pull a block or add one from the bench.</p>";
@@ -161,16 +197,21 @@ function render(){const r=M.evaluate(D,on);save();
   if(r.dil<1)L.appendChild(el("p","note","Over capacity. Every block now delivers about "+pct(r.dil)+" of what it could, to everyone."));
   const P=$("profile");P.innerHTML=$("lens").checked?'<p style="margin:8px 0 0"><b>'+r.profile.id[0].toUpperCase()+r.profile.id.slice(1)+" deal.</b> "+r.profile.why[0].toUpperCase()+r.profile.why.slice(1)+'.</p><p class="note" style="margin:4px 0 0">Four types: contained, constructive, counterproductive, corrosive. The test is what happens next.</p>':"";
   // stress
-  document.querySelectorAll("#shocks .pill").forEach(c=>c.setAttribute("aria-pressed",!!shock&&c.dataset.id===shock.id));
-  const X=$("stress");if(!sres)X.innerHTML="";else{
+  document.querySelectorAll("#shocks .pill").forEach(c=>c.setAttribute("aria-pressed",c.dataset.id==="all"?runAll:!!shock&&c.dataset.id===shock.id));
+  const X=$("stress");
+  if(runAll){const all=M.stressAll(D,r),n=all.filter(x=>x.verdict==="holds").length;
+    X.innerHTML="<p><b>Survived "+n+" of "+all.length+".</b> "+(n===all.length?"Nothing gave. Either you built well or you have not added much.":n===0?"Every shock found something missing.":"The ones that hurt show what you traded away.")+"</p><div class='score'>"+all.map(x=>"<span class='dot "+(x.verdict==="holds"?"h":x.verdict==="gives way"?"g":"s")+"'>"+x.shock.n+": "+x.verdict+"</span>").join("")+"</div>";}
+  else if(!sres)X.innerHTML="";else{
     X.innerHTML="<p><b>"+shock.n+": the tower "+sres.verdict+".</b> "+shock.q+"</p><ul style='margin:0;padding-left:18px'>"+sres.rows.map(x=>"<li>"+x.n+": "+x.state+"</li>").join("")+"</ul>"+
-    (sres.weakAud.length?"<p class='note'>And the people you would turn to are thinner: "+sres.weakAud.map(a=>D.AUD[M.AUDIX[a.id]].n).join(", ")+".</p>":"")+(r.dil<1?"<p class='note'>An overloaded tower absorbs less.</p>":"");}
+    (sres.weakAud.length?"<p class='note'>And the people you would turn to are thinner: "+sres.weakAud.map(a=>D.AUD[M.AUDIX[a.id]].n).join(", ")+".</p>":"")+(r.dil<1?"<p class='note'>An overloaded tower absorbs less.</p>":"")+(sres.verdict==="gives way"?"<p class='note'>(Rebuilt, so you can keep playing.)</p>":"");}
+  // challenges
+  const ch=M.challenges(D,r,tol);$("chal").innerHTML=D.CHALLENGES.map(c=>{if(ch[c.id])won[c.id]=true;return "<li class='"+(won[c.id]?"done":"")+"'><span class='box'>"+(won[c.id]?"✓":"")+"</span><span><b>"+c.n+".</b> "+c.d+"</span></li>";}).join("");
   detail(r);
 }
 function blockBtn(b,r,smap){
   if(!r.on[b.id]){const g=el("button","blk gap",b.n+"<small>pulled, click to restore</small>");g.onclick=()=>toggle(b.id);if(smap[b.id]==="missing")g.classList.add("hit");return g;}
   const s=r.str[b.id],e=el("button","blk"+(b.on?"":" added")+(s<0.99?" strained":"")+(s<0.5?" weak":""),b.n+"<small>"+b.s+"</small>"+(s<0.99?'<span class="tag">'+pct(s)+"</span>":""));
-  e.style.setProperty("--k",COL[b.cat]||"var(--c3)");e.title=b.d;e.onclick=()=>toggle(b.id);
+  if(dropId===b.id||(dropId==="*"&&!b.on))e.classList.add("drop");e.style.setProperty("--k",COL[b.cat]||"var(--c3)");e.title=b.d;e.onclick=()=>toggle(b.id);
   if(smap[b.id])e.classList.add(smap[b.id]==="holding"?"held":"hit");return e;}
 function meterRow(label,x){const e=el("div","row"),w=Math.max(0,Math.min(1.5,x))/1.5*100;
   e.innerHTML="<span>"+label+"</span><span class='meter'><i class='"+(x<=0?"neg":x<0.97?"dn":"")+"' style='width:"+(x<=0?3:w)+"%'></i></span><span class='num'>"+(x<=0?"gone":pct(x))+"</span>";return e;}
@@ -190,14 +231,16 @@ function detail(r){const X=$("detail");if(!last){X.innerHTML="<h2>Last move</h2>
     if(k[0]==="a"&&k.length===2)b.a[+k[1]]=Math.max(-3,Math.min(3,v));else b[k]=Math.max(0,v);prev=null;const open=true;render();const d=$("detail").querySelector("details");if(d)d.open=open;});
 }
 // ---- static controls ----
-D.PRESETS.forEach(p=>{const e=el("button","pill",p.n);e.dataset.id=p.id;e.onclick=()=>setPreset(p);$("presets").appendChild(e);});
+D.PRESETS.forEach(p=>{const e=el("button","pill"+(p.g==="fun"?" fun":""),p.n);e.dataset.id=p.id;e.title=p.quip;e.onclick=()=>setPreset(p);$(p.g==="fun"?"funsets":"presets").appendChild(e);});
 const cats={};D.BLOCKS.filter(b=>!b.on).forEach(b=>(cats[b.cat]=cats[b.cat]||[]).push(b));
 Object.keys(cats).forEach(c=>{$("bench").appendChild(el("h3","",D.CATS[c]));const w=el("div","chips");cats[c].forEach(b=>{const e=el("button","chip",b.n);e.dataset.id=b.id;e.title=b.d;e.onclick=()=>toggle(b.id);w.appendChild(e);});$("bench").appendChild(w);});
 TL.forEach((t,i)=>{const e=el("button","pill",t);e.onclick=()=>{DIALS.forEach(d=>tol[d[0]]=i);dials();render();};e.dataset.i=i;$("tolset").appendChild(e);});
 function dials(){const X=$("dials");X.innerHTML="";DIALS.forEach(d=>{const w=el("div","dial","<label for='d_"+d[0]+"'>"+d[1]+"</label><input type='range' min='0' max='2' step='1' id='d_"+d[0]+"' value='"+tol[d[0]]+"'><span>"+["Can afford little loss","Some loss is fine","Willing to lose a lot"][tol[d[0]]]+"</span>");
   X.appendChild(w);w.querySelector("input").oninput=ev=>{tol[d[0]]=+ev.target.value;dials();render();$("d_"+d[0]).focus();};});
   document.querySelectorAll("#tolset .pill").forEach(p=>p.setAttribute("aria-pressed",DIALS.every(d=>tol[d[0]]===+p.dataset.i)));}
-D.SHOCKS.forEach(s=>{const e=el("button","pill",s.n);e.dataset.id=s.id;e.onclick=()=>{shock=shock&&shock.id===s.id?null:s;render();};$("shocks").appendChild(e);});
+D.SHOCKS.forEach(s=>{const e=el("button","pill",s.n);e.dataset.id=s.id;e.onclick=()=>{runAll=false;shock=shock&&shock.id===s.id?null:s;
+  if(shock){const v=M.stress(D,M.evaluate(D,on),s).verdict;fx=v==="holds"?"pulse":v==="gives way"?"fall":"shake";}render();};$("shocks").appendChild(e);});
+{const e=el("button","pill","Run all five");e.dataset.id="all";e.style.fontWeight="700";e.onclick=()=>{shock=null;runAll=!runAll;if(runAll){const a=M.stressAll(D,M.evaluate(D,on));fx=a.some(x=>x.verdict==="gives way")?"fall":a.some(x=>x.verdict!=="holds")?"shake":"pulse";}render();};$("shocks").prepend(e);}
 $("lens").onchange=render;
 $("copy").onclick=()=>{const u=location.href,b=$("copy");(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{b.textContent="Link copied";},()=>{const o=$("out");o.hidden=false;o.value=u;o.select();});};
 $("export").onclick=()=>{const ch=D.BLOCKS.map(b=>({id:b.id,a:b.a,want:b.want,gate:b.gate,wt:b.wt})).filter((b,i)=>JSON.stringify(b)!==JSON.stringify(ORIG[i]));const o=$("out");o.hidden=false;o.value=ch.length?JSON.stringify(ch,null,1):"No scores changed yet. Edit a block's scores under Last move.";};

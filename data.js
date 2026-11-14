@@ -6,11 +6,11 @@
    strains: other blocks this one loads. needs: blocks it depends on. All scores are judgment. */
 (function (root) {
   var AUD = [
-    { id: "dem", n: "Democrats and NGO allies" }, { id: "gop", n: "Republicans, conservatives" },
-    { id: "omb", n: "OMB and White House" }, { id: "state", n: "State leadership" },
-    { id: "approp", n: "Appropriators" }, { id: "econ", n: "Economists and evaluators" },
-    { id: "partner", n: "Partner governments" }, { id: "biz", n: "US business" },
-    { id: "power", n: "In-country power brokers" }];
+    { id: "dem", n: "Democrats and NGO allies", s: "Democrats" }, { id: "gop", n: "Republicans, conservatives", s: "Republicans" },
+    { id: "omb", n: "OMB and White House", s: "OMB" }, { id: "state", n: "State leadership", s: "State" },
+    { id: "approp", n: "Appropriators", s: "appropriators" }, { id: "econ", n: "Economists and evaluators", s: "economists" },
+    { id: "partner", n: "Partner governments", s: "partner governments" }, { id: "biz", n: "US business", s: "US business" },
+    { id: "power", n: "In-country power brokers", s: "in-country power brokers" }];
   var CATS = { core: "Core design", mech: "Delivery mechanics", pol: "Political and institutional glue",
     state: "Statecraft and commerce", proc: "Procurement", sel: "Selection", cond: "Conditions",
     evid: "Evidence", scope: "Scope", struct: "Structure" };
@@ -157,12 +157,24 @@
       "Threshold-style programs for countries well short of the scorecard.", "Illustrative")
   ];
   var PRESETS = [
-    { id: "built", n: "As built", add: [], drop: [] },
-    { id: "basics", n: "Stripped down", add: [], drop: ["thr", "inc", "reg", "grants"] },
-    { id: "econ", n: "Economist's build", add: ["cofin"], drop: [] },
-    { id: "statecraft", n: "Statecraft build", add: ["dip", "min", "dfc", "priv", "usroi", "waiver", "third", "ban"], drop: [] },
-    { id: "approp", n: "Appropriator's build", add: ["brand", "cofin", "buyam", "earmark"], drop: [] },
-    { id: "bagel", n: "Everything bagel", add: "ALL", drop: [], skip: ["merge", "bureau", "noclock", "disc"] }
+    { id: "built", g: "serious", n: "As built", add: [], drop: [], quip: "The tower as it stands." },
+    { id: "basics", g: "serious", n: "Stripped down", add: [], drop: ["thr", "inc", "reg", "grants"], quip: "Just the discipline. Very tidy, and not much anyone abroad is asking for." },
+    { id: "econ", g: "serious", n: "Economist's build", add: ["cofin"], drop: [], quip: "As built, plus skin in the game." },
+    { id: "statecraft", g: "serious", n: "Statecraft build", add: ["dip", "min", "dfc", "priv", "usroi", "waiver", "third", "ban"], drop: [], quip: "A compact is a deal, so make it a good one for us." },
+    { id: "approp", g: "serious", n: "Appropriator's build", add: ["brand", "cofin", "buyam", "earmark"], drop: [], quip: "If we are paying for it, it will say so on the sign." },
+    { id: "bagel", g: "fun", n: "Everything bagel", add: "ALL", drop: [], skip: ["merge", "bureau", "noclock", "disc"], quip: "Everyone got their topping. Nobody can taste the bagel." },
+    { id: "tree", g: "fun", n: "Christmas tree", add: ["earmark", "sector", "safeg", "brand", "buyam", "local", "rct", "bonus", "cofin"], drop: [], quip: "Every office hung an ornament. The branches are starting to bend." },
+    { id: "checkbook", g: "fun", n: "Ambassador's checkbook", add: ["waiver", "disc", "polproj", "errwaive", "unrel", "dip", "third", "noclock"], drop: [], quip: "Any country, any project, any time. Just ask the front office." },
+    { id: "annex", g: "fun", n: "DFC annex", add: ["merge", "dfc", "loans", "usroi", "priv", "min", "bonus"], drop: [], quip: "It is a bank now. The grants are still here somewhere." },
+    { id: "fortress", g: "fun", n: "Paperwork fortress", add: ["rct", "safeg", "cofin", "sector", "local", "brand"], drop: [], quip: "Nothing will go wrong, because nothing will get built." },
+    { id: "speedrun", g: "fun", n: "Speed run", add: ["fast", "errwaive", "waiver", "polproj"], drop: ["diag"], quip: "Signed in a year. We will find out what it was for later." }
+  ];
+  var CHALLENGES = [
+    { id: "quiet", n: "The quiet block", d: "Pull one block that causes no headline today, then watch a stress test fail." },
+    { id: "state", n: "Something for State", d: "Lift State by 20% without dropping economists below 90%." },
+    { id: "lunch", n: "Free lunch", d: "Add three bench blocks and still hold all five shocks." },
+    { id: "both", n: "Both sides of the aisle", d: "Change the tower so Democrats and Republicans both end up above where they started." },
+    { id: "trim", n: "Lean and loved", d: "Pull two blocks and still hold all five shocks." }
   ];
   var SHOCKS = [
     { id: "cut", n: "Budget cut", q: "An appropriations fight puts the account on the table.",
@@ -176,6 +188,6 @@
     { id: "renege", n: "Partner reneges", q: "A government walks back its commitments.",
       carriers: ["own", "tranche", "clock", "diag"], auds: ["partner", "power"] }
   ];
-  var D = { AUD: AUD, CATS: CATS, BLOCKS: BLOCKS, PRESETS: PRESETS, SHOCKS: SHOCKS, SLACK: 3 };
+  var D = { AUD: AUD, CATS: CATS, BLOCKS: BLOCKS, PRESETS: PRESETS, CHALLENGES: CHALLENGES, SHOCKS: SHOCKS, SLACK: 3 };
   if (typeof module !== "undefined" && module.exports) module.exports = D; else root.DATA = D;
 })(this);

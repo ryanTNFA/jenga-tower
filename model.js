@@ -104,6 +104,31 @@
     var score = cov * r.dil - weakAud.length * 0.1;
     return { cov: cov, score: score, rows: rows, weakAud: weakAud, verdict: score >= 0.8 ? "holds" : score >= 0.55 ? "is strained" : "gives way" };
   }
-  var MOD = { evaluate: evaluate, risks: risks, stress: stress, defaults: defaults, preset: preset, byId: byId, AUDIX: AUDIX };
+  // A plain name for what you built: who it now serves and who paid.
+  function verdict(D, r) {
+    var def = defaults(D), same = def.length === r.ids.length && def.every(function (i) { return r.on[i]; });
+    if (same) return { title: "MCC as built", line: "Fifteen blocks, each with someone behind it." };
+    var hi = 0, lo = 0; r.ratio.forEach(function (x, i) { if (x > r.ratio[hi]) hi = i; if (x < r.ratio[lo]) lo = i; });
+    var up = r.ratio[hi] > 1.08, down = r.ratio[lo] < 0.92, H = D.AUD[hi].s, L = D.AUD[lo].s, cap = function (t) { return t[0].toUpperCase() + t.slice(1); };
+    var both = "Biggest gain: " + H + ". Biggest loss: " + L + ".";
+    if (r.dil < 0.7) return { title: "An everything bagel", line: "It does all of it, at about " + Math.round(r.dil * 100) + "% strength. Biggest loss: " + L + "." };
+    if (up && down) return { title: "An MCC for " + H + ", paid for by " + L, line: both };
+    if (r.dil < 0.9) return { title: "A crowded MCC", line: "More asks than the agency can carry, so each one lands at about " + Math.round(r.dil * 100) + "% strength. Biggest loss: " + L + "." };
+    if (up) return { title: "More for " + H + ", and no bill yet", line: "Nobody has lost much today. Run the stress tests before you trust that." };
+    if (down) return { title: "A smaller MCC", line: "Biggest loss: " + L + ". Nobody gains by a clear margin." };
+    return { title: "MCC, lightly edited", line: "Nothing moved much today. Run the stress tests before you trust that." };
+  }
+  function stressAll(D, r) { return D.SHOCKS.map(function (s) { var x = stress(D, r, s); x.shock = s; return x; }); }
+  function challenges(D, r, tol) {
+    var def = defaults(D), pulled = def.filter(function (i) { return !r.on[i]; }).length, added = r.ids.length - (def.length - pulled);
+    var all = stressAll(D, r), holds = all.filter(function (x) { return x.verdict === "holds"; }).length, k = risks(D, r, tol);
+    var changed = pulled + added > 0, minR = Math.min.apply(null, r.ratio);
+    return { quiet: pulled === 1 && added === 0 && k.headlines.length === 0 && holds < all.length,
+      state: r.ratio[AUDIX.state] >= 1.2 && r.ratio[AUDIX.econ] >= 0.9,
+      lunch: added >= 3 && holds === all.length,
+      both: changed && r.ratio[AUDIX.dem] > 1.005 && r.ratio[AUDIX.gop] > 1.005,
+      trim: pulled >= 2 && holds === all.length };
+  }
+  var MOD = { verdict: verdict, stressAll: stressAll, challenges: challenges, evaluate: evaluate, risks: risks, stress: stress, defaults: defaults, preset: preset, byId: byId, AUDIX: AUDIX };
   if (typeof module !== "undefined" && module.exports) module.exports = MOD; else root.MODEL = MOD;
 })(this);
